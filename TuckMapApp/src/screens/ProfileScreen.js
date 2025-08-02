@@ -7,31 +7,41 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
+  Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfileScreen = () => {
-  const userName = "Dipanshu Jangid";
+  const navigation = useNavigation();
+  const userName = 'Dipanshu Jangid';
   const userPhoto = 'https://i.pravatar.cc/300'; // Replace with actual image URL or Firebase
 
   const handleEditProfile = () => {
     console.log('Edit Profile pressed');
+    // navigation.navigate('EditProfile'); // if you have edit profile screen
   };
 
-  const handleLogout = () => {
-    console.log('Logout pressed');
+  const handleLogout = async () => {
+    try {
+      // Clear AsyncStorage (or only token if you prefer)
+      await AsyncStorage.clear();
+
+      // Navigate to Login screen
+      navigation.replace('Login'); // use .replace() to prevent back button going to Profile
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong during logout.');
+      console.error('Logout error:', error);
+    }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
       <View style={styles.container}>
-        {/* Profile Photo */}
         <Image source={{ uri: userPhoto }} style={styles.profileImage} />
-
-        {/* User Name */}
         <Text style={styles.userName}>{userName}</Text>
 
-        {/* Buttons */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
             <Text style={styles.buttonText}>Edit Profile</Text>
@@ -90,7 +100,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 30,
     alignItems: 'center',
-    
   },
   buttonText: {
     color: '#fff',
